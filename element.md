@@ -13,36 +13,13 @@ import "./index.css";
 
 如果放在 `assets` 文件夹中不会被打包编译，默认是啥就是啥，放在除了` assets` 文件夹外就会被打包编译。
 
-#### 聊聊 Element 的安装使用
+### vue 的常用的 ui 库 element-ui
 
-讲完 `vue-router` 路由插件，就顺着往下讲 `element` 插件，这是最最最常用的。别人做好的东西我们去拿来用就行了
+#### 完整引入
 
-```json
- "dependencies": {
-    "core-js": "^3.6.5",
-    "vue": "^2.6.11",
-    "vue-router": "^3.2.0"
-  }
-```
-
-`vue/cli` 官方提供的脚手架,解析 `vue created vue-demo`
-
-我们主打的是 `pc` 端
-用的组件库有(复制粘贴就可以直接用)
-
-- `element ui` 组件库
-- `swiper` 使用轮播图
-- `Bootstrap` 按钮
-
-如果不到万不得已就不要用之前的 `jq` 和 `dom` 操作，因为他们都是真实操作 `dom`。
-
-#### 快速上手
-
-**第一种:(全局)完整引入**
-
-1. 使用 命令行工具 输入 `npm i element-ui -S`
-2. 在 `main.js` 中写入以下内容：
-   `vue` 里面有插件的知识，就是把 `element` 组件注册成全局的,想在哪用都行。
+1. 第一步用 `npm` 的方式安装，它能更好地和 `webpack` 打包工具配合使用。
+   - 在项目下的命令行工具中输入 `npm i element-ui -S` 下载。
+2. 在 `main.js` 中写入以下内容.(`vue` 里面有插件的知识，就是把 `element` 组件注册成全局的,想在哪用都行。)
 
 ```js
 // main.js 中
@@ -51,6 +28,7 @@ import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import App from "./App.vue";
 
+// 现在有了这句话无需在我的组件内引入了，可以直接使用了。
 Vue.use(ElementUI); //全局使用 Element 库里的各种效果
 new Vue({
   el: "#app",
@@ -58,13 +36,89 @@ new Vue({
 });
 ```
 
-##### 使用
-
-直接去官方的文档复制就可以了
+3. 现在可以直接使用了，直接去官方的文档复制就可以了
 
 ```html
 <el-button type="success" disabled>成功按钮</el-button>
 ```
+
+#### 按需引入
+
+借助 `babel-plugin-component`，我们可以只引入需要的组件，以达到减小项目体积的目的。
+
+1. 首先，安装 `babel-plugin-component`：
+   - 在 vue-ui-demos 包中的命令行输入
+
+```js
+npm install babel-plugin-component -D
+```
+
+2. (官方说的)然后，将 `.babelrc `修改为：
+
+```js
+{
+  "presets": [["es2015", { "modules": false }]],
+  "plugins": [
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
+    ]
+  ]
+}
+```
+
+3. 但是我们只有 `babel.config.js`
+
+```js
+module.exports = {
+  presets: ["@vue/cli-plugin-babel/preset"],
+};
+```
+
+4. 把 `"plugins"` 粘过去就行了。
+
+```js
+module.exports = {
+  presets: ["@vue/cli-plugin-babel/preset"],
+  plugins: [
+    [
+      "component",
+      {
+        libraryName: "element-ui",
+        styleLibraryName: "theme-chalk",
+      },
+    ],
+  ],
+};
+```
+
+5. `main.js` 中修改
+
+```js
+import Vue from "vue";
+import App from "./App.vue";
+
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
+Vue.use(ElementUI);
+
+// import { Button,Switch} from 'element-ui';
+// Vue.use(Button)
+// Vue.use(Switch)
+
+// 将 Message 方法添加到整个 Vue 的原型对象内，也就是整个项目内都可以使用 this.$message 访问
+// Vue.prototype.$message = Message
+Vue.config.productionTip = false;
+new Vue({
+  render: (h) => h(App),
+}).$mount("#app");
+```
+
+6. 因为我们修改了 `babel.config.js` ，这个属于配置文件，配置文件需要重启服务器。
+   - 就是把界面的 `serve` 停止，再重新开一下。
 
 **第二种:按需引入**
 
