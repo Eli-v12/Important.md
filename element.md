@@ -143,3 +143,41 @@ Vue.prototype.$message = Message;
 Vue.use(Button);
 Vue.use(Tree);
 ```
+
+### Message 消息提示
+
+##### 单一导入 && 全局导入
+
+```js
+// main.js
+import { Button, Switch, Link, Message } from "element-ui";
+Vue.prototype.$message = Message;
+// 将 Message 方法添加到整个 Vue 的原型对象内，也就是整个项目内都可以使用 this.$message 访问，把 Message 当成 Vue 的一个公共方法，用 this.$message 进行访问。
+// 特别特别的注意 是不加 Vue.use(Message) 的
+// Vue.use(Message);
+```
+
+```html
+<div>
+  <el-button :plain="true" @click="success">成功</el-button>
+  <el-button :plain="true">警告</el-button>
+  <el-button :plain="true">消息</el-button>
+  <el-button :plain="true">错误</el-button>
+</div>
+```
+
+```js
+import {Message} from 'element-ui'
+// 此时导入的是一个 Message 函数
+success() {
+  // Message({
+  //   message: "恭喜你，这是一条成功消息",
+  //   type: "success",
+  // });
+  this.$message({
+    message: "恭喜你，这是一条成功的消息",
+    type: "success",
+    duration: 1000,
+  });
+}
+```
